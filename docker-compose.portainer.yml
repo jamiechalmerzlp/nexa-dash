@@ -1,0 +1,17 @@
+services:
+  dashdot:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+      target: prod
+    container_name: dashdot
+    restart: unless-stopped
+    privileged: true
+    ports:
+      - "3001:3001"
+    environment:
+      DASHDOT_SHOW_HOST: "true"
+      DASHDOT_ENABLE_CPU_TEMPS: "true"
+      DASHDOT_ACCEPT_OOKLA_EULA: "true"
+    volumes:
+      - /:/mnt/host:ro
