@@ -1,10 +1,7 @@
 services:
-  dashdot:
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile
-      target: prod
-    container_name: dashdot
+  nexa-dash:
+    image: jamiechalmerzlp/nexadash:latest
+    container_name: nexa-dash
     restart: unless-stopped
     privileged: true
     ports:
