@@ -1,100 +1,48 @@
-<!-- markdownlint-disable -->
-<h1>
-  <img src=".github/images/banner_muted.png" alt="dash. - a modern server dashboard">
-</h1>
+# Nexa Dash
 
-<p align="center">
-  <a href="https://github.com/MauriceNino/dashdot/actions/workflows/deploy.yaml?branch=main" target="_blank">
-    <img title="GitHub Actions" src="https://github.com/MauriceNino/dashdot/actions/workflows/deploy.yaml/badge.svg?branch=main">
-  </a>
+Nexa Dash is a self-hosted server dashboard focused on clean visuals, live charts,
+and a polished control surface for smaller servers, homelabs, and private
+infrastructure.
 
-  <a href="https://discord.gg/3teHFBNQ9W" target="_blank">
-    <img title="Discord" src="https://discord.com/api/guilds/986251291577688064/widget.png?style=shield">
-  </a>
-</p>
-<p align="center">
-  <i>Feel free to join the <b>Discord</b> and <b>star the repo</b> if you like the project!</i>
-</p>
+This repository is the custom Nexa Dash build, including:
 
-<br/>
+- A dedicated `/settings` page for browser-side personalization
+- Theme color controls
+- Dashboard naming and browser title overrides
+- Widget show and hide controls
+- Portainer-friendly deployment via `docker-compose.portainer.yml`
 
-<p align="center">
-  <b>dash.</b> (or <b>dashdot</b>) is a modern server dashboard,
-  running on the latest tech, designed with glassmorphism in mind.
-  It is intended to be used for smaller VPS and private servers.
-</p>
-<br />
-<p align="center">
-  <a href="https://dash.mauz.dev" target="_blank">Live Demo</a>
- |
-  <a href="https://hub.docker.com/r/mauricenino/dashdot" target="_blank">Docker Image</a>
-</p>
+## Highlights
 
-#
+- Live CPU, RAM, storage, network, and GPU graphs
+- Glass-style dashboard layout
+- Dark and light mode support
+- Browser-stored personalization layer
+- Docker and Portainer deployment support
 
-<a href="https://ko-fi.com/mauricenino" target="_blank">
-  <img 
-    align="right"
-    width="160"
-    style="padding-left: 20px; padding-bottom: 10px"
-    alt="Consider sponsoring the development of this project"
-    src="https://cdn.ko-fi.com/cdn/kofi2.png?v=3"
-  />
-</a>
+## Repository
 
-<!-- markdownlint-enable -->
+- GitHub: https://github.com/jamiechalmerzlp/nexa-dash
+- Compose file for Portainer: `docker-compose.portainer.yml`
 
-**dash.** is a open-source project, so any contribution is highly appreciated.
-If you are interested in further developing this project, have a look at the
-[Contributing.md](./.github/CONTRIBUTING.md).
+## Deploy With Portainer
 
-In case you want to financially support this project, you can visit my
-[GitHub Sponsors](https://github.com/sponsors/MauriceNino), or my [Ko-Fi](https://ko-fi.com/mauricenino).
+In Portainer, create a new stack from a Git repository and use:
 
-## Preview
+- Repository URL: `https://github.com/jamiechalmerzlp/nexa-dash.git`
+- Reference: `main`
+- Compose path: `docker-compose.portainer.yml`
 
-<!-- markdownlint-disable -->
+After deployment, the dashboard should be available on port `3001`, and the
+settings page will be at `/settings`.
 
-| Dark-Mode                                                                                    | Light-Mode                                                                                     |
-| -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| <img src="apps/docs/static/img/screenshot_darkmode.png" alt="Screenshot of the dark-mode" /> | <img src="apps/docs/static/img/screenshot_lightmode.png" alt="Screenshot of the light-mode" /> |
+## Local Branding Notes
 
-<!-- markdownlint-enable -->
+The visible project branding in this repo has been updated to Nexa Dash. The
+underlying code structure still contains some internal package names and
+environment variable prefixes inherited from the original architecture so the
+app keeps building and running correctly.
 
-## Documentation
+## License
 
-- [Installation Options](https://getdashdot.com/docs/installation/docker)
-- [Configuration Options](https://getdashdot.com/docs/configuration/basic)
-- [Contributing](./.github/CONTRIBUTING.md)
-- [Changelog](./.github/CHANGELOG.md)
-
-## Quick Install (Docker)
-
-Images are hosted on [DockerHub](https://hub.docker.com/r/mauricenino/dashdot),
-and are available for both AMD64 and ARM devices.
-
-```bash
-docker container run -it \
-  -p 80:3001 \
-  -v /:/mnt/host:ro \
-  --privileged \
-  mauricenino/dashdot
-```
-
-To get more information on why which flag is needed, or if you want to use other
-install options instead (`docker-compose`, or from source), have a look at the
-[installation options](https://getdashdot.com/docs/installation/docker).
-
-To read more about configuration options, you can visit the [configuration options](https://getdashdot.com/docs/configuration).
-
-## Developer Notice
-
-> Note: Due to the consistently growing size of the `.git` folder, which was
-> caused by a combination of [yarn offline mirror](https://yarnpkg.com/features/caching#offline-mirror)
-> and [dependabot](https://docs.github.com/en/code-security/getting-started/dependabot-quickstart-guide)
-> changes, I had to rewrite the entire history and remove the `.yarn/cache` folder.
-> You can read more about this problem [here](https://github.com/yarnpkg/berry/issues/180)
->
-> This resulted in a loss of all forks, which were created before the 18th of
-> March 2025. If you are one of the affected forks, I am sorry for the inconvenience.
-> Please consider re-forking the repository.
+This project is distributed under the MIT license. See [LICENSE.md](./LICENSE.md).

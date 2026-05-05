@@ -1,42 +1,38 @@
 # Contributing
 
-The simplest way of contributing is to create
-[a new issue](https://github.com/MauriceNino/dashdot/issues) using the
-corresponding templates for feature-requests and bug-reports.
+Thanks for contributing to Nexa Dash.
 
-If you are able to, you can also create a
-[pull request](https://github.com/MauriceNino/dashdot/pulls) to add the wanted
-features or fix the found bug yourself. Any contribution is highly appreciated!
+The easiest ways to contribute are:
 
-## Setup
+- Open an issue in this repository
+- Propose a feature request with clear screenshots or examples
+- Submit a pull request with a focused fix or improvement
 
-To start working on this project, run the following series of commands:
+## Local Setup
 
 ```bash
-git clone https://github.com/MauriceNino/dashdot &&\
-  cd dashdot &&\
-  yarn &&\
-  yarn build
+git clone https://github.com/jamiechalmerzlp/nexa-dash
+cd nexa-dash
+yarn
+yarn build
 ```
 
-After that, you might need to restart Visual Studio Code, because otherwise there
-can be some errors with Typescript.
+If your editor shows stale TypeScript errors after install, restart the editor
+window once dependencies have finished installing.
 
-When you are done with all that, you can start a dev server using `docker-compose`
-with:
+## Development
+
+Use the standard project scripts:
 
 ```bash
 yarn dev
+yarn test
+yarn lint
 ```
 
-## Git
+## Pull Requests
 
-Development is done on the `dev` branch, so please use that as the base branch in your work.
-
-This project uses semantic commit messages - if you are unsure on how to create a semantic commit message,
-you can check out the [Semantic Commit Message Standards](https://www.conventionalcommits.org/en/v1.0.0/),
-or run the interactive commit message creator, which will create the commit message for you:
-
-```bash
-yarn commit
-```
+- Keep changes focused
+- Include a short explanation of what changed
+- Update related docs when behavior changes
+- Prefer clear commit messages

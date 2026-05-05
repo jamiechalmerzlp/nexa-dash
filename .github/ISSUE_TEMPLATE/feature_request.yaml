@@ -10,7 +10,7 @@ body:
     id: describe-the-feature
     attributes:
       label: Description of the feature
-      description: Please describe in full detail, what you would like as a feature in dash.. Feel free to add any pictures or details to make it as clear as possible.
+      description: Please describe in full detail what you would like to add to Nexa Dash. Feel free to include screenshots or examples.
     validations:
       required: true
   - type: textarea

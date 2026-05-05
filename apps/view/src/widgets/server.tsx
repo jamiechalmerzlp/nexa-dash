@@ -214,7 +214,7 @@ export const ServerWidget: FC<ServerWidgetProps> = ({ data, config }) => {
       ghost
       shape="circle"
       icon={<FontAwesomeIcon icon={faGithub} />}
-      href="https://github.com/MauriceNino/dashdot"
+      href="https://github.com/jamiechalmerzlp/nexa-dash"
       target="_blank"
       aria-label="GitHub Link"
     />

@@ -319,7 +319,7 @@ export const SettingsPage: FC<SettingsPageProps> = ({
             <Subtitle>
               Personalize the dashboard without touching the server config.
               These settings stay in this browser and layer on top of the
-              current dashdot setup.
+              current Nexa Dash setup.
             </Subtitle>
           </HeaderText>
 
@@ -519,7 +519,7 @@ export const SettingsPage: FC<SettingsPageProps> = ({
                   <ToggleText>
                     <ToggleLabel>Safe defaulting</ToggleLabel>
                     <ToggleHint>
-                      If you clear a value, dashdot falls back to its current
+                      If you clear a value, Nexa Dash falls back to its current
                       server config.
                     </ToggleHint>
                   </ToggleText>

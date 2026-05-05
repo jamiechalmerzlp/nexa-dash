@@ -1,14 +1,14 @@
 {
-  "name": "dashdot",
+  "name": "nexa-dash",
   "version": "0.0.0",
-  "description": "dash. - a modern server dashboard",
+  "description": "Nexa Dash - a customizable self-hosted server dashboard",
   "license": "MIT",
   "private": true,
-  "repository": "https://github.com/MauriceNino/dashdot",
-  "homepage": "https://getdashdot.com",
-  "author": "MauriceNino <mauriceprivat98@gmail.com>",
+  "repository": "https://github.com/jamiechalmerzlp/nexa-dash",
+  "homepage": "https://github.com/jamiechalmerzlp/nexa-dash",
+  "author": "Jamie Chalmers <jamiechalmerzlp@gmail.com>",
   "bugs": {
-    "url": "https://github.com/MauriceNino/dashdot/issues"
+    "url": "https://github.com/jamiechalmerzlp/nexa-dash/issues"
   },
   "keywords": [
     "monitoring",
@@ -102,7 +102,7 @@
       [
         "@semantic-release/github",
         {
-          "successComment": ":tada: This issue has been resolved in version ${nextRelease.version}\n\nPlease check the [changelog](https://github.com/MauriceNino/dashdot/blob/main/.github/CHANGELOG.md) for more details.",
+          "successComment": ":tada: This issue has been resolved in version ${nextRelease.version}\n\nPlease check the [changelog](https://github.com/jamiechalmerzlp/nexa-dash/blob/main/.github/CHANGELOG.md) for more details.",
           "successCommentCondition": "<% return issue.user.type !== 'Bot'; %>",
           "failComment": false,
           "failTitle": false,
