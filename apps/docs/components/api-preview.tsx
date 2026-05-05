@@ -76,7 +76,7 @@ export const ApiPreview = () => {
   }, []);
 
   const [protocol, setProtocol] = useState('https');
-  const [url, setUrl] = useState('dash.mauz.dev');
+  const [url, setUrl] = useState('nexadash.local');
 
   const baseUrl = `${protocol}://${url}`;
   const info = getDataFromUrl(`${baseUrl}/info`);
@@ -124,7 +124,7 @@ export const ApiPreview = () => {
                   id="url"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
-                  placeholder="dash.mauz.dev"
+                  placeholder="nexadash.local"
                   className="flex-1"
                 />
               </div>

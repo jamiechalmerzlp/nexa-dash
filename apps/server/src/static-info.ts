@@ -1,5 +1,5 @@
 import { inspect } from 'node:util';
-import type { HardwareInfo, ServerInfo } from '@dashdot/common';
+import type { HardwareInfo, ServerInfo } from '@nexadash/common';
 import { BehaviorSubject, map, type Observable } from 'rxjs';
 import * as si from 'systeminformation';
 import { CONFIG } from './config';
@@ -18,8 +18,8 @@ const STATIC_INFO = new BehaviorSubject<HardwareInfo>({
     platform: '',
     release: '',
     uptime: 0,
-    dash_buildhash: '',
-    dash_version: '',
+    nexadash_buildhash: '',
+    nexadash_version: '',
   },
   cpu: {
     brand: '',

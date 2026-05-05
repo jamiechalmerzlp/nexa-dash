@@ -1,4 +1,4 @@
-import type { GpuInfo, GpuLoad } from '@dashdot/common';
+import type { GpuInfo, GpuLoad } from '@nexadash/common';
 import * as si from 'systeminformation';
 import { CONFIG } from '../config';
 

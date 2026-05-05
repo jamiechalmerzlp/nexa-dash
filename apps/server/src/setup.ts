@@ -99,13 +99,13 @@ const MNT_OS_PATH_CANDIDATES = [
 export const setupOsVersion = async () => {
   try {
     if (CONFIG.running_in_docker) {
-      const hostPath = MNT_OS_PATH_CANDIDATES.find((p) => fs.lstatSync(p));
+      const hostPath = MNT_OS_PATH_CANDIDATES.find((p) => fs.existsSync(p));
 
       if (hostPath) {
         await refreshHostOsRelease();
 
         const realFile = await resolveSymlink(hostPath);
-        const arrow = hostPath === realFile ? '' : ` → "${realFile}"`;
+        const arrow = hostPath === realFile ? '' : ` -> "${realFile}"`;
 
         console.log(
           `Bound "${hostPath}"${arrow} to ${LOCAL_OS_PATHS.filter((p) =>

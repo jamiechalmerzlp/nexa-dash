@@ -1,4 +1,4 @@
-import type { Config, OsInfo, Transient } from '@dashdot/common';
+import type { Config, OsInfo, Transient } from '@nexadash/common';
 import {
   faApple,
   faCentos,
@@ -206,7 +206,12 @@ export const ServerWidget: FC<ServerWidgetProps> = ({ data, config }) => {
     (minutes ? `${minutes} minutes` : '');
   const distro = data.distro;
   const platform = data.platform;
-  const os = override.os ?? `${distro} ${data.release}`;
+  // data.release is empty when distro already encodes the version
+  // (e.g. PRETTY_NAME "Debian GNU/Linux 12 (bookworm)"). Avoid producing
+  // "Debian GNU/Linux 12 (bookworm) " with a trailing space.
+  const os =
+    override.os ??
+    (data.release ? `${distro} ${data.release}` : distro).trim();
   const arch = override.arch ?? data.arch;
 
   const ghBtn = (
@@ -223,8 +228,8 @@ export const ServerWidget: FC<ServerWidgetProps> = ({ data, config }) => {
   return (
     <Container>
       <ButtonsContainer>
-        {config.show_dash_version === 'icon_hover' ? (
-          <Tooltip placement="right" title={data.dash_version}>
+        {config.show_nexadash_version === 'icon_hover' ? (
+          <Tooltip placement="right" title={data.nexadash_version}>
             {ghBtn}
           </Tooltip>
         ) : (
@@ -241,11 +246,11 @@ export const ServerWidget: FC<ServerWidgetProps> = ({ data, config }) => {
       <Heading>
         {config?.show_host && host ? (
           <>
-            <Appendix>{dashboardName}.</Appendix>
+            <Appendix>{dashboardName}</Appendix>
             <ServerName>{host}</ServerName>
           </>
         ) : (
-          <StandaloneAppendix>{dashboardName}.</StandaloneAppendix>
+          <StandaloneAppendix>{dashboardName}</StandaloneAppendix>
         )}
       </Heading>
 
@@ -255,7 +260,10 @@ export const ServerWidget: FC<ServerWidgetProps> = ({ data, config }) => {
           os: { label: 'OS', value: os },
           arch: { label: 'Arch', value: arch },
           up_since: { label: 'Up since', value: uptimeStr },
-          dash_version: { label: 'Dash Version', value: data.dash_version },
+          nexadash_version: {
+            label: 'NexaDash Version',
+            value: data.nexadash_version,
+          },
         })}
         page={0}
         itemsPerPage={7}

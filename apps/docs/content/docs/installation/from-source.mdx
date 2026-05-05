@@ -1,6 +1,6 @@
 ---
 title: From Source
-description: How to install and configure dash. from source
+description: How to install and configure NexaDash from source
 tags:
   - Installation
   - Configuration
@@ -20,7 +20,7 @@ To run this repository from source, you need to have the following installed:
 - [git](https://git-scm.com/)
 - [speedtest](https://www.speedtest.net/apps/cli) (recommended)
   - or alternatively: [speedtest-cli](https://github.com/sivel/speedtest-cli)
-  - or alternatively: [use local file](../configuration/network#dashdot_speed_test_from_path)
+  - or alternatively: [use local file](../configuration/network#nexadash_speed_test_from_path)
 </Step>
 <Step>
 ## Setup
@@ -31,8 +31,8 @@ After that, download and build the project (might take a few minutes)
   <Tab value='Linux'>
 
 ```bash
-git clone https://github.com/MauriceNino/dashdot \
-  && cd dashdot \
+git clone https://github.com/jamiechalmerzlp/nexa-dash \
+  && cd nexa-dash \
   && yarn \
   && yarn build:prod
 ```
@@ -41,8 +41,8 @@ git clone https://github.com/MauriceNino/dashdot \
   <Tab value='Windows (Cmd)'>
 
 ```bash
-git clone https://github.com/MauriceNino/dashdot ^
-  && cd dashdot ^
+git clone https://github.com/jamiechalmerzlp/nexa-dash ^
+  && cd nexa-dash ^
   && yarn ^
   && yarn build:prod
 ```
@@ -97,7 +97,7 @@ Config options can optionally passed using environment variables.
   <Tab value='Linux'>
 
 ```bash
-export DASHDOT_PORT="8080" \
+export NEXADASH_PORT="8080" \
   && sudo -E yarn start
 ```
 
@@ -105,7 +105,7 @@ export DASHDOT_PORT="8080" \
   <Tab value='Windows (Cmd)'>
 
 ```bash
-set DASHDOT_PORT=8080 ^
+set NEXADASH_PORT=8080 ^
   && yarn start
 ```
 
@@ -115,7 +115,7 @@ set DASHDOT_PORT=8080 ^
 <Step>
 ## Update
 
-You can update your Dash. instance, by stopping your instance, then
+You can update your NexaDash instance, by stopping your instance, then
 running the following commands and in the end, restart your instance.
 
 

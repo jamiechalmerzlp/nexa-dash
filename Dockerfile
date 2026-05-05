@@ -1,41 +1,37 @@
+# Root Dockerfile for Docker Hub and manual `docker build` usage.
+# Keep this in sync with `docker/Dockerfile` when the container build changes.
+
 # BASE #
-FROM nvidia/cuda:12.9.1-base-ubuntu20.04 AS base
+FROM node:20-alpine AS base
 
 WORKDIR /app
 ARG TARGETPLATFORM
-ENV NEXADASH_IMAGE=nvidia
+ENV NEXADASH_IMAGE=base
 ENV NEXADASH_RUNNING_IN_DOCKER=true
-ENV NVIDIA_VISIBLE_DEVICES=all
-ENV NVIDIA_DRIVER_CAPABILITIES="compute,video,utility"
 
 RUN \
   /bin/echo ">> installing dependencies" &&\
-  apt-get update &&\
-  apt-get install -y \
-    curl \
-    wget \
+  apk update &&\
+  apk --no-cache add \
+    lsblk \
     mdadm \
     dmidecode \
+    coreutils \
     util-linux \
-    pciutils \
     lm-sensors &&\
-  curl -fsSL https://deb.nodesource.com/setup_20.x | bash - &&\
-  apt-get install -y nodejs &&\
-  corepack enable &&\
   if [ "$TARGETPLATFORM" = "linux/amd64" ] || [ "$(uname -m)" = "x86_64" ]; \
     then \
       /bin/echo ">> installing dependencies (amd64)"; \
   elif [ "$TARGETPLATFORM" = "linux/arm64" ] || [ "$(uname -m)" = "aarch64" ]; \
     then \
-      /bin/echo ">> installing dependencies (arm64)"; \
+      /bin/echo ">> installing dependencies (arm64)" &&\
+      apk --no-cache add raspberrypi; \
   elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; \
     then \
-      /bin/echo ">> installing dependencies (arm/v7)"; \
+      /bin/echo ">> installing dependencies (arm/v7)" &&\
+      apk --no-cache add raspberrypi; \
   else /bin/echo "Unsupported platform"; exit 1; \
-  fi &&\
-  /bin/echo -e ">> clean-up" &&\
-  apt-get clean && \
-  rm -rf /tmp/* /var/tmp/*
+  fi
 
 # DEV #
 FROM base AS dev
@@ -45,7 +41,7 @@ EXPOSE 3000
 
 RUN \
   /bin/echo -e ">> installing dependencies (dev)" &&\
-  apt-get install -y \
+  apk --no-cache add \
     git &&\
   git config --global --add safe.directory /app
 
@@ -59,18 +55,18 @@ ENV NODE_ENV=production
 
 RUN \
   /bin/echo -e ">> installing dependencies (build)" &&\
-  apt-get install -y \
+  apk --no-cache add \
     git \
     make \
     clang \
-    build-essential &&\
+    build-base &&\
   git config --global --add safe.directory /app &&\
   /bin/echo -e "{\"version\":\"$VERSION\",\"buildhash\":\"$BUILDHASH\"}" > /app/version.json
 
 COPY . ./
 
 RUN \
-  yarn --immutable &&\
+  yarn install &&\
   yarn build:prod &&\
   node scripts/strip_package_json.js
 

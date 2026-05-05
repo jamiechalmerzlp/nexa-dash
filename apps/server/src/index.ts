@@ -1,17 +1,14 @@
 import { readFileSync } from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
-import { urlJoin } from '@dashdot/common';
+import { urlJoin } from '@nexadash/common';
 import compression from 'compression';
 import cors from 'cors';
-import cronParser from 'cronstrue';
 import express from 'express';
 import { lookup as mimeLookup } from 'mime-types';
-import cron from 'node-cron';
 import type { Unsubscribable } from 'rxjs';
 import { Server } from 'socket.io';
 import { CONFIG } from './config';
-import getNetworkInfo from './data/network';
 import { getDynamicServerInfo } from './dynamic-info';
 import {
   setupHostSpecific,
@@ -22,7 +19,6 @@ import {
 import {
   getStaticServerInfo,
   getStaticServerInfoObs,
-  loadInfo,
   loadStaticServerInfo,
 } from './static-info';
 
@@ -122,7 +118,13 @@ server.listen(CONFIG.port, async () => {
   }
 
   if (process.env.NODE_ENV === 'production') {
-    router.get('*', (_, res) => {
+    // Serve the SPA shell for any unmatched GET request under the routing path.
+    router.use((req, res, next) => {
+      if (req.method !== 'GET') {
+        next();
+        return;
+      }
+
       res.setHeader('Cache-Control', 'public, max-age=0');
       res.sendFile(viewIndexPath);
     });
@@ -174,33 +176,6 @@ server.listen(CONFIG.port, async () => {
     });
   });
 
-  if (CONFIG.widget_list.includes('network')) {
-    try {
-      console.log('Running speed-test (this may take a few minutes)...');
-
-      if (CONFIG.speed_test_interval_cron) {
-        if (cron.validate(CONFIG.speed_test_interval_cron)) {
-          console.log(
-            `Speed-test interval cron expression: ${
-              CONFIG.speed_test_interval_cron
-            } (${cronParser.toString(CONFIG.speed_test_interval_cron)})`,
-          );
-        } else {
-          console.warn(
-            `Invalid cron expression: ${CONFIG.speed_test_interval_cron}`,
-          );
-        }
-      }
-
-      await loadInfo('network', () => getNetworkInfo.speedTest(true), true);
-    } catch (e) {
-      console.warn(e);
-    }
-
-    obs.speedTest.subscribe({
-      error: (e) => console.warn(e),
-    });
-  }
 });
 
 server.on('error', console.error);

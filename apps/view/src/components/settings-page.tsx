@@ -1,13 +1,15 @@
 import { faArrowLeft, faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Switch } from 'antd';
-import { type Dispatch, type FC, useEffect } from 'react';
+import { type ChangeEvent, type Dispatch, type FC, useEffect } from 'react';
 import SimpleBar from 'simplebar-react';
 import styled, { useTheme } from 'styled-components';
 import { getDashboardPath } from '../services/app-routes';
 import {
   allWidgetKeys,
+  backgroundModeLabels,
   type DashboardCustomizations,
+  getBackgroundMode,
   getDashboardName,
   getVisibleWidgets,
   themeColorLabels,
@@ -16,28 +18,29 @@ import {
 } from '../services/dashboard-customization';
 import { useIsMobile } from '../services/mobile';
 import { usePageData } from '../services/page-data';
-import { ErrorWidget } from '../widgets/error';
 import { GlassPane } from './glass-pane';
 import { ThemedText } from './text';
 
 const Page = styled.div<{ $mobile: boolean }>`
   min-height: 100vh;
-  padding: ${({ $mobile }) => ($mobile ? '32px 20px' : '56px 4vw')};
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: ${({ $mobile }) => ($mobile ? '24px 18px 42px' : '48px 32px 64px')};
 `;
 
 const Header = styled.div<{ $mobile: boolean }>`
   display: flex;
   flex-direction: ${({ $mobile }) => ($mobile ? 'column' : 'row')};
-  align-items: ${({ $mobile }) => ($mobile ? 'stretch' : 'center')};
+  align-items: start;
+  gap: 24px;
   justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
 `;
 
 const HeaderText = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 14px;
 `;
 
 const Eyebrow = styled(ThemedText)`
@@ -48,36 +51,39 @@ const Eyebrow = styled(ThemedText)`
 `;
 
 const Title = styled(ThemedText)`
-  font-size: clamp(2rem, 3vw, 3.4rem);
+  font-size: clamp(2rem, 4vw, 3.25rem);
   font-weight: 800;
-  line-height: 0.95;
+  line-height: 0.98;
+  max-width: 13ch;
 `;
 
 const Subtitle = styled(ThemedText)`
   font-size: 1rem;
   line-height: 1.5;
-  opacity: 0.92;
-  max-width: 640px;
+  opacity: 0.84;
+  max-width: 54ch;
 `;
 
 const Summary = styled.div<{ $mobile: boolean }>`
   display: grid;
-  grid-template-columns: repeat(${({ $mobile }) => ($mobile ? 1 : 2)}, 1fr);
-  gap: 18px;
-  margin-bottom: 24px;
+  grid-template-columns: ${({ $mobile }) =>
+    $mobile ? '1fr' : 'repeat(2, minmax(0, 1fr))'};
+  gap: 16px;
+  margin-bottom: 22px;
 `;
 
 const SummaryCard = styled(GlassPane)`
   min-height: unset;
   max-height: unset;
+  align-self: start;
 `;
 
 const SummaryContent = styled.div`
   width: 100%;
-  padding: 22px 24px;
+  padding: 18px 22px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 `;
 
 const SummaryLabel = styled(ThemedText)`
@@ -92,23 +98,38 @@ const SummaryValue = styled(ThemedText)`
   font-weight: 700;
 `;
 
-const Grid = styled.div<{ $mobile: boolean }>`
+const BodyGrid = styled.div<{ $mobile: boolean }>`
   display: grid;
-  grid-template-columns: repeat(${({ $mobile }) => ($mobile ? 1 : 2)}, 1fr);
-  gap: 24px;
+  grid-template-columns: ${({ $mobile }) =>
+    $mobile ? '1fr' : 'minmax(0, 1.08fr) minmax(320px, 0.92fr)'};
+  align-items: start;
+  gap: 22px;
+`;
+
+const Column = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
 `;
 
 const Panel = styled(GlassPane)`
   min-height: unset;
   max-height: unset;
+  align-self: start;
 `;
 
 const PanelContent = styled.div`
   width: 100%;
-  padding: 26px;
+  padding: 24px 26px;
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 20px;
+`;
+
+const PanelHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 `;
 
 const PanelTitle = styled(ThemedText)`
@@ -153,10 +174,61 @@ const TextInput = styled.input`
   }
 `;
 
+const SelectInput = styled.select`
+  width: 100%;
+  border: 1px solid ${({ theme }) => `${theme.colors.text}26`};
+  background: ${({ theme }) => `${theme.colors.surface}99`};
+  color: ${({ theme }) => theme.colors.text};
+  border-radius: 14px;
+  padding: 14px 16px;
+  font: inherit;
+  outline: none;
+
+  &:focus {
+    border-color: ${({ theme }) => theme.colors.primary};
+    box-shadow: 0 0 0 3px ${({ theme }) => `${theme.colors.primary}26`};
+  }
+`;
+
+const FileInput = styled.input`
+  width: 100%;
+  border: 1px dashed ${({ theme }) => `${theme.colors.text}40`};
+  background: ${({ theme }) => `${theme.colors.surface}55`};
+  color: ${({ theme }) => theme.colors.text};
+  border-radius: 14px;
+  padding: 12px 14px;
+  font: inherit;
+  cursor: pointer;
+
+  &::file-selector-button {
+    margin-right: 12px;
+    padding: 6px 12px;
+    border: 1px solid ${({ theme }) => `${theme.colors.text}33`};
+    background: ${({ theme }) => `${theme.colors.surface}aa`};
+    color: ${({ theme }) => theme.colors.text};
+    border-radius: 8px;
+    font: inherit;
+    cursor: pointer;
+  }
+`;
+
+const ResetRow = styled.div<{ $mobile: boolean }>`
+  display: flex;
+  flex-direction: ${({ $mobile }) => ($mobile ? 'column' : 'row')};
+  gap: 10px;
+  flex-wrap: wrap;
+`;
+
 const InlineActions = styled.div<{ $mobile: boolean }>`
   display: flex;
   flex-direction: ${({ $mobile }) => ($mobile ? 'column' : 'row')};
-  gap: 12px;
+  gap: 10px;
+  flex-wrap: wrap;
+`;
+
+const ActionButton = styled(Button)`
+  height: 44px;
+  border-radius: 12px;
 `;
 
 const ToggleList = styled.div`
@@ -167,7 +239,7 @@ const ToggleList = styled.div`
 
 const ToggleRow = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 18px;
 `;
@@ -176,6 +248,7 @@ const ToggleText = styled.div`
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
 `;
 
 const ToggleLabel = styled(ThemedText)`
@@ -227,6 +300,78 @@ const ColorValue = styled(ThemedText)`
   text-transform: uppercase;
 `;
 
+const PreviewCard = styled.div`
+  border: 1px solid ${({ theme }) => `${theme.colors.text}1a`};
+  background: ${({ theme }) => `${theme.colors.surface}66`};
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+const PreviewLabel = styled(ThemedText)`
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0.72;
+`;
+
+const PreviewImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
+const BackdropPreview = styled.div`
+  min-height: 150px;
+  border-radius: 20px;
+  border: 1px solid ${({ theme }) => `${theme.colors.text}14`};
+  background:
+    radial-gradient(
+      circle at 18% 20%,
+      ${({ theme }) => `${theme.colors.primary}cc`} 0%,
+      transparent 24%
+    ),
+    linear-gradient(
+      145deg,
+      ${({ theme }) => theme.colors.background} 0%,
+      ${({ theme }) => theme.colors.secondary} 52%,
+      ${({ theme }) => theme.colors.primary} 100%
+    );
+  overflow: hidden;
+  position: relative;
+`;
+
+const BackdropImage = styled(PreviewImage)`
+  position: absolute;
+  inset: 0;
+`;
+
+const BackdropOverlay = styled.div`
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    145deg,
+    ${({ theme }) => `${theme.colors.background}bb`} 0%,
+    ${({ theme }) => `${theme.colors.secondary}88`} 100%
+  );
+`;
+
+const PreviewText = styled(ThemedText)`
+  opacity: 0.78;
+  line-height: 1.45;
+  margin: 0;
+`;
+
+const readImageAsDataUrl = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result ?? ''));
+    reader.onerror = () => reject(new Error('Unable to read image file.'));
+    reader.readAsDataURL(file);
+  });
+
 type SettingsPageProps = {
   customizations: DashboardCustomizations;
   setCustomizations: Dispatch<DashboardCustomizations>;
@@ -242,12 +387,13 @@ export const SettingsPage: FC<SettingsPageProps> = ({
 }) => {
   const isMobile = useIsMobile();
   const theme = useTheme();
-  const { pageLoaded, error, config } = usePageData();
+  const { config } = usePageData();
   const visibleWidgets = getVisibleWidgets(config, customizations);
   const visibleWidgetCount = visibleWidgets.length;
+  const backgroundMode = getBackgroundMode(customizations);
 
   useEffect(() => {
-    document.title = `${getDashboardName(customizations)}. settings`;
+    document.title = `${getDashboardName(customizations)} settings`;
   }, [customizations]);
 
   const updateCustomizations = (next: Partial<DashboardCustomizations>) => {
@@ -268,6 +414,22 @@ export const SettingsPage: FC<SettingsPageProps> = ({
     };
   };
 
+  const updateImageCustomization =
+    (key: 'backgroundImage') =>
+    async (event: ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      event.target.value = '';
+
+      if (!file || !file.type.startsWith('image/')) {
+        return;
+      }
+
+      const image = await readImageAsDataUrl(file);
+      updateCustomizations({
+        [key]: image,
+      } as Partial<DashboardCustomizations>);
+    };
+
   const toggleWidget = (widget: WidgetKey, enabled: boolean) => {
     const widgetOrder = [
       ...new Set([...(config?.widget_list ?? []), ...allWidgetKeys]),
@@ -281,32 +443,6 @@ export const SettingsPage: FC<SettingsPageProps> = ({
     });
   };
 
-  if (error) {
-    return (
-      <SimpleBar style={{ height: '100%' }}>
-        <Page $mobile={isMobile}>
-          <Header $mobile={isMobile}>
-            <Button
-              icon={<FontAwesomeIcon icon={faArrowLeft} />}
-              href={getDashboardPath(window.location.pathname)}
-            >
-              Back to dashboard
-            </Button>
-          </Header>
-          <Panel grow={0} minWidth={420}>
-            <PanelContent>
-              <ErrorWidget errorText={error.text} />
-            </PanelContent>
-          </Panel>
-        </Page>
-      </SimpleBar>
-    );
-  }
-
-  if (!pageLoaded || !config) {
-    return null;
-  }
-
   const dashboardName = getDashboardName(customizations);
 
   return (
@@ -319,37 +455,37 @@ export const SettingsPage: FC<SettingsPageProps> = ({
             <Subtitle>
               Personalize the dashboard without touching the server config.
               These settings stay in this browser and layer on top of the
-              current Nexa Dash setup.
+              current NexaDash setup.
             </Subtitle>
           </HeaderText>
 
           <InlineActions $mobile={isMobile}>
-            <Button
+            <ActionButton
               icon={<FontAwesomeIcon icon={faArrowLeft} />}
               href={getDashboardPath(window.location.pathname)}
             >
               Back to dashboard
-            </Button>
-            <Button
+            </ActionButton>
+            <ActionButton
               icon={<FontAwesomeIcon icon={faRotateLeft} />}
               onClick={() => setCustomizations({})}
             >
               Reset customizations
-            </Button>
+            </ActionButton>
           </InlineActions>
         </Header>
 
         <Summary $mobile={isMobile}>
-          <SummaryCard grow={1} minWidth={260}>
+          <SummaryCard grow={1} minWidth={220}>
             <SummaryContent>
               <SummaryLabel>Browser title</SummaryLabel>
               <SummaryValue>
-                {customizations.browserTitle?.trim() || `${dashboardName}.`}
+                {customizations.browserTitle?.trim() || dashboardName}
               </SummaryValue>
             </SummaryContent>
           </SummaryCard>
 
-          <SummaryCard grow={1} minWidth={260}>
+          <SummaryCard grow={1} minWidth={220}>
             <SummaryContent>
               <SummaryLabel>Visible widgets</SummaryLabel>
               <SummaryValue>
@@ -359,184 +495,254 @@ export const SettingsPage: FC<SettingsPageProps> = ({
           </SummaryCard>
         </Summary>
 
-        <Grid $mobile={isMobile}>
-          <Panel grow={1} minWidth={320}>
-            <PanelContent>
-              <div>
-                <PanelTitle>Branding</PanelTitle>
-                <PanelDescription>
-                  Rename the dashboard and control the title shown in the
-                  browser tab.
-                </PanelDescription>
-              </div>
+        <BodyGrid $mobile={isMobile}>
+          <Column>
+            <Panel grow={1} minWidth={320}>
+              <PanelContent>
+                <PanelHeader>
+                  <PanelTitle>Branding</PanelTitle>
+                  <PanelDescription>
+                    Rename the dashboard and control the title shown in the
+                    browser tab.
+                  </PanelDescription>
+                </PanelHeader>
 
-              <Field>
-                <FieldLabel>Dashboard name</FieldLabel>
-                <TextInput
-                  value={customizations.dashboardName ?? ''}
-                  placeholder="dash"
-                  onChange={(event) =>
-                    updateCustomizations({
-                      dashboardName: event.target.value,
-                    })
-                  }
-                />
-                <FieldHint>
-                  This replaces the hard-coded dash label in the main server
-                  card.
-                </FieldHint>
-              </Field>
+                <Field>
+                  <FieldLabel>Dashboard name</FieldLabel>
+                  <TextInput
+                    value={customizations.dashboardName ?? ''}
+                    placeholder="NexaDash"
+                    onChange={(event) =>
+                      updateCustomizations({
+                        dashboardName: event.target.value,
+                      })
+                    }
+                  />
+                  <FieldHint>
+                    This replaces the default NexaDash label in the main server
+                    card.
+                  </FieldHint>
+                </Field>
 
-              <Field>
-                <FieldLabel>Browser title</FieldLabel>
-                <TextInput
-                  value={customizations.browserTitle ?? ''}
-                  placeholder={`${dashboardName}.`}
-                  onChange={(event) =>
-                    updateCustomizations({
-                      browserTitle: event.target.value,
-                    })
-                  }
-                />
-                <FieldHint>
-                  Leave this blank to derive it from the dashboard name.
-                </FieldHint>
-              </Field>
-            </PanelContent>
-          </Panel>
+                <Field>
+                  <FieldLabel>Browser title</FieldLabel>
+                  <TextInput
+                    value={customizations.browserTitle ?? ''}
+                    placeholder={dashboardName}
+                    onChange={(event) =>
+                      updateCustomizations({
+                        browserTitle: event.target.value,
+                      })
+                    }
+                  />
+                  <FieldHint>
+                    Leave this blank to derive it from the dashboard name.
+                  </FieldHint>
+                </Field>
+              </PanelContent>
+            </Panel>
 
-          <Panel grow={1} minWidth={320}>
-            <PanelContent>
-              <div>
-                <PanelTitle>Appearance</PanelTitle>
-                <PanelDescription>
-                  Switch between light and dark mode, then fine-tune the color
-                  palette that drives the glass panels and charts.
-                </PanelDescription>
-              </div>
+            <Panel grow={1} minWidth={320}>
+              <PanelContent>
+                <PanelHeader>
+                  <PanelTitle>Appearance</PanelTitle>
+                  <PanelDescription>
+                    Switch between light and dark mode, then fine-tune the
+                    color palette that drives the glass panels and charts.
+                  </PanelDescription>
+                </PanelHeader>
 
-              <ToggleRow>
-                <ToggleText>
-                  <ToggleLabel>Dark mode</ToggleLabel>
-                  <ToggleHint>
-                    Uses the same toggle the dashboard already exposes on the
-                    server widget.
-                  </ToggleHint>
-                </ToggleText>
-                <Switch
-                  checked={darkMode}
-                  onChange={(checked) => setDarkMode(checked)}
-                />
-              </ToggleRow>
+                <ToggleRow>
+                  <ToggleText>
+                    <ToggleLabel>Dark mode</ToggleLabel>
+                    <ToggleHint>
+                      Uses the same toggle the dashboard already exposes on the
+                      server widget.
+                    </ToggleHint>
+                  </ToggleText>
+                  <Switch
+                    checked={darkMode}
+                    onChange={(checked) => setDarkMode(checked)}
+                  />
+                </ToggleRow>
 
-              <ColorGrid>
-                {themeColorLabels.map(({ key, label }) => {
-                  const value = customizations.colors?.[key] ?? theme.colors[key];
+                <Field>
+                  <FieldLabel>Background style</FieldLabel>
+                  <SelectInput
+                    value={backgroundMode}
+                    onChange={(event) =>
+                      updateCustomizations({
+                        backgroundMode: event.target.value as DashboardCustomizations['backgroundMode'],
+                      })
+                    }
+                  >
+                    {backgroundModeLabels.map((mode) => (
+                      <option key={mode.value} value={mode.value}>
+                        {mode.label}
+                      </option>
+                    ))}
+                  </SelectInput>
+                  <FieldHint>
+                    {
+                      backgroundModeLabels.find(
+                        (mode) => mode.value === backgroundMode,
+                      )?.description
+                    }
+                  </FieldHint>
+                </Field>
 
-                  return (
-                    <ColorField key={key}>
-                      <ColorInput
-                        type="color"
-                        value={value}
-                        onChange={(event) => updateColor(key)(event.target.value)}
+                <PreviewCard>
+                  <PreviewLabel>Background preview</PreviewLabel>
+                  <BackdropPreview>
+                    {backgroundMode === 'image' &&
+                    customizations.backgroundImage ? (
+                      <>
+                        <BackdropImage
+                          src={customizations.backgroundImage}
+                          alt="Background preview"
+                        />
+                        <BackdropOverlay />
+                      </>
+                    ) : null}
+                  </BackdropPreview>
+                  <PreviewText>
+                    {backgroundMode === 'image'
+                      ? customizations.backgroundImage
+                        ? 'Custom image mode uses your uploaded art with a tinted overlay so widgets stay readable.'
+                        : 'Upload an image below to switch from the generated backdrop to your own background.'
+                      : 'Generated modes keep the dashboard responsive and adapt naturally to your chosen color palette.'}
+                  </PreviewText>
+                </PreviewCard>
+
+                <Field>
+                  <FieldLabel>Background image</FieldLabel>
+                  <FileInput
+                    type="file"
+                    accept="image/*"
+                    onChange={updateImageCustomization('backgroundImage')}
+                  />
+                  <FieldHint>
+                    This is only used when the background style is set to
+                    Custom Image.
+                  </FieldHint>
+                </Field>
+
+                <ColorGrid>
+                  {themeColorLabels.map(({ key, label }) => {
+                    const value =
+                      customizations.colors?.[key] ?? theme.colors[key];
+
+                    return (
+                      <ColorField key={key}>
+                        <ColorInput
+                          type="color"
+                          value={value}
+                          onChange={(event) =>
+                            updateColor(key)(event.target.value)
+                          }
+                        />
+                        <ColorCopy>
+                          <ColorName>{label}</ColorName>
+                          <ColorValue>{value}</ColorValue>
+                        </ColorCopy>
+                      </ColorField>
+                    );
+                  })}
+                </ColorGrid>
+
+                <ResetRow $mobile={isMobile}>
+                  <Button
+                    icon={<FontAwesomeIcon icon={faRotateLeft} />}
+                    onClick={() => {
+                      const nextCustomizations = {
+                        ...customizations,
+                      };
+                      delete nextCustomizations.backgroundImage;
+                      if (nextCustomizations.backgroundMode === 'image') {
+                        nextCustomizations.backgroundMode = 'theme';
+                      }
+                      setCustomizations(nextCustomizations);
+                    }}
+                  >
+                    Use generated background
+                  </Button>
+                  <Button
+                    icon={<FontAwesomeIcon icon={faRotateLeft} />}
+                    onClick={() => {
+                      const nextCustomizations = {
+                        ...customizations,
+                      };
+                      delete nextCustomizations.colors;
+                      setCustomizations(nextCustomizations);
+                    }}
+                  >
+                    Use default palette
+                  </Button>
+                </ResetRow>
+              </PanelContent>
+            </Panel>
+          </Column>
+
+          <Column>
+            <Panel grow={1} minWidth={320}>
+              <PanelContent>
+                <PanelHeader>
+                  <PanelTitle>Quick Actions</PanelTitle>
+                  <PanelDescription>
+                    Jump back to the live dashboard or reset this browser's
+                    customization layer without touching server config.
+                  </PanelDescription>
+                </PanelHeader>
+
+                <InlineActions $mobile={isMobile}>
+                  <ActionButton
+                    icon={<FontAwesomeIcon icon={faArrowLeft} />}
+                    href={getDashboardPath(window.location.pathname)}
+                  >
+                    Back to dashboard
+                  </ActionButton>
+                  <ActionButton
+                    icon={<FontAwesomeIcon icon={faRotateLeft} />}
+                    onClick={() => setCustomizations({})}
+                  >
+                    Reset customizations
+                  </ActionButton>
+                </InlineActions>
+              </PanelContent>
+            </Panel>
+
+            <Panel grow={1} minWidth={320}>
+              <PanelContent>
+                <PanelHeader>
+                  <PanelTitle>Widgets</PanelTitle>
+                  <PanelDescription>
+                    Show or hide sections without changing the server-side widget
+                    order.
+                  </PanelDescription>
+                </PanelHeader>
+
+                <ToggleList>
+                  {allWidgetKeys.map((widget) => (
+                    <ToggleRow key={widget}>
+                      <ToggleText>
+                        <ToggleLabel>{widgetLabels[widget]}</ToggleLabel>
+                        <ToggleHint>
+                          {config?.widget_list.includes(widget)
+                            ? 'Included by the current server configuration.'
+                            : 'Available as a client-side override.'}
+                        </ToggleHint>
+                      </ToggleText>
+                      <Switch
+                        checked={visibleWidgets.includes(widget)}
+                        onChange={(checked) => toggleWidget(widget, checked)}
                       />
-                      <ColorCopy>
-                        <ColorName>{label}</ColorName>
-                        <ColorValue>{value}</ColorValue>
-                      </ColorCopy>
-                    </ColorField>
-                  );
-                })}
-              </ColorGrid>
-
-              <Button
-                onClick={() => {
-                  const nextCustomizations = {
-                    ...customizations,
-                  };
-                  delete nextCustomizations.colors;
-                  setCustomizations(nextCustomizations);
-                }}
-              >
-                Use default palette
-              </Button>
-            </PanelContent>
-          </Panel>
-
-          <Panel grow={1} minWidth={320}>
-            <PanelContent>
-              <div>
-                <PanelTitle>Widgets</PanelTitle>
-                <PanelDescription>
-                  Show or hide sections without changing the server-side widget
-                  order.
-                </PanelDescription>
-              </div>
-
-              <ToggleList>
-                {allWidgetKeys.map((widget) => (
-                  <ToggleRow key={widget}>
-                    <ToggleText>
-                      <ToggleLabel>{widgetLabels[widget]}</ToggleLabel>
-                      <ToggleHint>
-                        {config.widget_list.includes(widget)
-                          ? 'Included by the current server configuration.'
-                          : 'Available as a client-side override.'}
-                      </ToggleHint>
-                    </ToggleText>
-                    <Switch
-                      checked={visibleWidgets.includes(widget)}
-                      onChange={(checked) => toggleWidget(widget, checked)}
-                    />
-                  </ToggleRow>
-                ))}
-              </ToggleList>
-            </PanelContent>
-          </Panel>
-
-          <Panel grow={1} minWidth={320}>
-            <PanelContent>
-              <div>
-                <PanelTitle>What this changes</PanelTitle>
-                <PanelDescription>
-                  This first pass is focused on the personalization layer you
-                  described: naming, palette, and widget visibility. It keeps
-                  the existing graphs and server-fed data intact while making
-                  the surface configurable.
-                </PanelDescription>
-              </div>
-
-              <ToggleList>
-                <ToggleRow>
-                  <ToggleText>
-                    <ToggleLabel>Stored locally</ToggleLabel>
-                    <ToggleHint>
-                      Each browser can keep its own layout and color choices.
-                    </ToggleHint>
-                  </ToggleText>
-                </ToggleRow>
-                <ToggleRow>
-                  <ToggleText>
-                    <ToggleLabel>Safe defaulting</ToggleLabel>
-                    <ToggleHint>
-                      If you clear a value, Nexa Dash falls back to its current
-                      server config.
-                    </ToggleHint>
-                  </ToggleText>
-                </ToggleRow>
-                <ToggleRow>
-                  <ToggleText>
-                    <ToggleLabel>Ready to expand</ToggleLabel>
-                    <ToggleHint>
-                      This structure can grow into per-widget options, reordering,
-                      and fuller page config later.
-                    </ToggleHint>
-                  </ToggleText>
-                </ToggleRow>
-              </ToggleList>
-            </PanelContent>
-          </Panel>
-        </Grid>
+                    </ToggleRow>
+                  ))}
+                </ToggleList>
+              </PanelContent>
+            </Panel>
+          </Column>
+        </BodyGrid>
       </Page>
     </SimpleBar>
   );

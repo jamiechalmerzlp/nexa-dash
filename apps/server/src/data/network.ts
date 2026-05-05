@@ -1,7 +1,11 @@
 import { exec as cexec } from 'node:child_process';
 import fs from 'node:fs';
 import { promisify } from 'node:util';
-import { capFirst, type NetworkInfo, type NetworkLoad } from '@dashdot/common';
+import {
+  capFirst,
+  type NetworkInfo,
+  type NetworkLoad,
+} from '@nexadash/common';
 import dedent from 'dedent';
 import * as si from 'systeminformation';
 import { CONFIG } from '../config';
@@ -174,10 +178,10 @@ export default {
         - speedtest-cli: https://github.com/sivel/speedtest-cli
 
         Or alternatively, provide a local file with speedtest results,
-        using DASHDOT_SPEEDTEST_FROM_PATH.
+        using NEXADASH_SPEEDTEST_FROM_PATH.
   
-        For more help on how to setup dashdot, look here:
-        https://getdashdot.com/docs/installation/from-source
+        For more help on how to set up NexaDash, look here:
+        https://jamiechalmerzlp.github.io/nexa-dash/docs/installation/from-source
       `);
     }
 

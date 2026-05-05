@@ -9,12 +9,6 @@ services:
     environment:
       NEXADASH_SHOW_HOST: "true"
       NEXADASH_ENABLE_CPU_TEMPS: "true"
-    # IMPORTANT: long-form bind mount.
-    # Portainer's stack editor silently rewrites the short-form
-    # "- /:/mnt/host:ro" into a named volume (e.g. attaching it to
-    # `portainer_portainer_data`), which makes OS / storage / network
-    # detection report the container's own values instead of the host's.
-    # The long form below is preserved verbatim.
     volumes:
       - type: bind
         source: /

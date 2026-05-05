@@ -1,4 +1,4 @@
-import type { CpuInfo, CpuLoad } from '@dashdot/common';
+import type { CpuInfo, CpuLoad } from '@nexadash/common';
 import * as si from 'systeminformation';
 import { CONFIG } from '../config';
 import { getStaticServerInfo } from '../static-info';

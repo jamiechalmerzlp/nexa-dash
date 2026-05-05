@@ -1,4 +1,4 @@
-import type { Config, NetworkInfo, NetworkLoad } from '@dashdot/common';
+import type { Config, NetworkInfo, NetworkLoad } from '@nexadash/common';
 import { faNetworkWired } from '@fortawesome/free-solid-svg-icons';
 import type { FC } from 'react';
 import { YAxis } from 'recharts';
@@ -16,7 +16,6 @@ import type { ChartVal } from '../utils/types';
 
 type NetworkChartProps = {
   load: NetworkLoad[];
-  data: NetworkInfo;
   config: Config;
   showPercentages: boolean;
   textOffset?: string;
@@ -26,7 +25,6 @@ type NetworkChartProps = {
 
 export const NetworkChart: FC<NetworkChartProps> = ({
   load,
-  data,
   config,
   showPercentages,
   textOffset,
@@ -36,9 +34,11 @@ export const NetworkChart: FC<NetworkChartProps> = ({
   const theme = useTheme();
 
   const override = config.override;
-  const speedUp = override.network_speed_up ?? data.speedUp;
-  const speedDown = override.network_speed_down ?? data.speedDown;
   const asBytes = config.network_speed_as_bytes;
+  const currentUp = ((load.at(-1)?.up as number) ?? 0) * 8;
+  const currentDown = ((load.at(-1)?.down as number) ?? 0) * 8;
+  const speedUp = override.network_speed_up ?? currentUp;
+  const speedDown = override.network_speed_down ?? currentDown;
 
   const chartDataDown = load.map((load, i) => ({
     x: i,
@@ -153,14 +153,14 @@ export const NetworkWidget: FC<NetworkWidgetProps> = ({
   const override = config.override;
 
   const type = override.network_type ?? data.type;
-  const speedUp = override.network_speed_up ?? data.speedUp;
-  const speedDown = override.network_speed_down ?? data.speedDown;
+  const currentUp = ((load.at(-1)?.up as number) ?? 0) * 8;
+  const currentDown = ((load.at(-1)?.down as number) ?? 0) * 8;
+  const speedUp = override.network_speed_up ?? currentUp;
+  const speedDown = override.network_speed_down ?? currentDown;
   const interfaceSpeed =
     override.network_interface_speed ?? data.interfaceSpeed;
   const publicIp = override.network_public_ip ?? data.publicIp;
   const asBytes = config.network_speed_as_bytes;
-  const lastSpeedTest = new Date(data.lastSpeedTest);
-  const lastSpeedTestString = `Last ran on ${lastSpeedTest.toLocaleDateString()}, at ${lastSpeedTest.toLocaleTimeString()}`;
 
   return (
     <HardwareInfoContainer
@@ -169,14 +169,12 @@ export const NetworkWidget: FC<NetworkWidgetProps> = ({
       infos={toInfoTable(config.network_label_list, {
         type: { label: 'Type', value: type },
         speed_up: {
-          label: 'Speed (Up)',
+          label: 'Traffic (Up)',
           value: speedUp ? bpsPrettyPrint(speedUp, asBytes) : undefined,
-          tooltip: lastSpeedTestString,
         },
         speed_down: {
-          label: 'Speed (Down)',
+          label: 'Traffic (Down)',
           value: speedDown ? bpsPrettyPrint(speedDown, asBytes) : undefined,
-          tooltip: lastSpeedTestString,
         },
         interface_speed: {
           label: 'Interface Speed',
@@ -192,7 +190,6 @@ export const NetworkWidget: FC<NetworkWidgetProps> = ({
       <NetworkChart
         showPercentages={config.always_show_percentages || isMobile}
         load={load}
-        data={data}
         config={config}
       />
     </HardwareInfoContainer>

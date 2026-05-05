@@ -4,7 +4,7 @@
     "**/.pnp.*": true
   },
   "biome.enabled": true,
-  "cSpell.words": ["dashdot"],
+  "cSpell.words": ["nexadash"],
   "editor.codeActionsOnSave": {
     "source.fixAll.biome": "explicit",
     "source.biome": "explicit",

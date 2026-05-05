@@ -1,4 +1,4 @@
-import type { Config } from '@dashdot/common';
+import type { Config } from '@nexadash/common';
 import type { DefaultTheme } from 'styled-components';
 import { darkTheme } from '../theme/theme';
 
@@ -14,12 +14,15 @@ export const allWidgetKeys = [
 export type WidgetKey = (typeof allWidgetKeys)[number];
 export type ThemeColorKey = keyof typeof darkTheme.colors;
 export type ThemeColorOverrides = Partial<Record<ThemeColorKey, string>>;
+export type BackgroundMode = 'theme' | 'aurora' | 'studio' | 'image';
 
 export type DashboardCustomizations = {
   dashboardName?: string;
   browserTitle?: string;
   visibleWidgets?: WidgetKey[];
   colors?: ThemeColorOverrides;
+  backgroundMode?: BackgroundMode;
+  backgroundImage?: string;
 };
 
 export const widgetLabels: Record<WidgetKey, string> = {
@@ -44,7 +47,34 @@ export const themeColorLabels: { key: ThemeColorKey; label: string }[] = [
   { key: 'gpuPrimary', label: 'GPU Chart' },
 ];
 
-const DEFAULT_DASHBOARD_NAME = 'dash';
+export const backgroundModeLabels: {
+  value: BackgroundMode;
+  label: string;
+  description: string;
+}[] = [
+  {
+    value: 'theme',
+    label: 'Theme Glow',
+    description: 'Uses the built-in animated glassmorphism backdrop.',
+  },
+  {
+    value: 'aurora',
+    label: 'Aurora',
+    description: 'Adds a brighter layered neon wash behind the widgets.',
+  },
+  {
+    value: 'studio',
+    label: 'Studio',
+    description: 'Uses sharper spotlight shapes for a moodier control room.',
+  },
+  {
+    value: 'image',
+    label: 'Custom Image',
+    description: 'Displays an uploaded background image with a dark overlay.',
+  },
+];
+
+const DEFAULT_DASHBOARD_NAME = 'NexaDash';
 
 const trimValue = (value?: string) => {
   const trimmed = value?.trim();
@@ -53,6 +83,10 @@ const trimValue = (value?: string) => {
 
 export const getDashboardName = (customizations?: DashboardCustomizations) =>
   trimValue(customizations?.dashboardName) ?? DEFAULT_DASHBOARD_NAME;
+
+export const getBackgroundMode = (
+  customizations?: DashboardCustomizations,
+): BackgroundMode => customizations?.backgroundMode ?? 'theme';
 
 export const getBrowserTitle = (
   config?: Config,
@@ -64,10 +98,10 @@ export const getBrowserTitle = (
   }
 
   if (trimValue(customizations?.dashboardName)) {
-    return `${getDashboardName(customizations)}.`;
+    return getDashboardName(customizations);
   }
 
-  return config?.page_title ?? `${DEFAULT_DASHBOARD_NAME}.`;
+  return config?.page_title ?? DEFAULT_DASHBOARD_NAME;
 };
 
 export const getVisibleWidgets = (

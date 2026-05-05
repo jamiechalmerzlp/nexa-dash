@@ -1,4 +1,4 @@
-import type { Transient } from '@dashdot/common';
+import type { Transient } from '@nexadash/common';
 import { faSliders } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button } from 'antd';
@@ -221,7 +221,7 @@ export const MainWidgetContainer: FC = () => {
           })}
         </FlexContainer>
 
-        {config.show_dash_version === 'bottom_right' && (
+        {config.show_nexadash_version === 'bottom_right' && (
           <ThemedText
             style={{
               position: 'fixed',
@@ -229,7 +229,7 @@ export const MainWidgetContainer: FC = () => {
               bottom: '10px',
             }}
           >
-            {osData?.dash_version}
+            {osData?.nexadash_version}
           </ThemedText>
         )}
       </ContentContainer>

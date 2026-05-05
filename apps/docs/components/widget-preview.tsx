@@ -37,7 +37,7 @@ export const WidgetPreview = () => {
   }, []);
 
   const [protocol, setProtocol] = useState('https');
-  const [url, setUrl] = useState('dash.mauz.dev');
+  const [url, setUrl] = useState('nexadash.local');
   const [widget, setWidget] = useState('cpu');
   const [multiView, setMultiView] = useState(false);
   const [filterGraph, setFilterGraph] = useState('both');

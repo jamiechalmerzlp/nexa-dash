@@ -1,6 +1,6 @@
 import { exec } from 'node:child_process';
 import { promisify } from 'node:util';
-import type { OsInfo } from '@dashdot/common';
+import type { OsInfo } from '@nexadash/common';
 import * as si from 'systeminformation';
 import { refreshHostOsRelease } from '../utils';
 
@@ -26,8 +26,8 @@ export default {
     const gitHash = await execp('git log -1 --format="%H"')
       .then(({ stdout }) => stdout.trim())
       .catch(() => undefined);
-    const dash_version = buildInfo.version ?? 'unknown';
-    const dash_buildhash = buildInfo.buildhash ?? gitHash;
+    const nexadash_version = buildInfo.version ?? 'unknown';
+    const nexadash_buildhash = buildInfo.buildhash ?? gitHash;
 
     return {
       arch: osInfo.arch,
@@ -39,8 +39,8 @@ export default {
           ? osInfo.build || 'unknown'
           : osInfo.release,
       uptime: 0,
-      dash_version,
-      dash_buildhash,
+      nexadash_version,
+      nexadash_buildhash,
     };
   },
 };

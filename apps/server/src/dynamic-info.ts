@@ -1,5 +1,4 @@
 import { inspect } from 'node:util';
-import cron from 'node-cron';
 import {
   debounceTime,
   interval,
@@ -21,7 +20,6 @@ import getGpuInfo from './data/gpu';
 import getNetworkInfo from './data/network';
 import getRamInfo from './data/ram';
 import getStorageInfo from './data/storage';
-import { loadInfo } from './static-info';
 
 class LazyObservable<T> implements Subscribable<T> {
   private observers: Array<Partial<Observer<any>> | ((value: any) => void)> =
@@ -169,32 +167,12 @@ export const getDynamicServerInfo = () => {
     getGpuInfo.dynamic,
   );
 
-  let speedTestObs = new Observable();
-
-  if (CONFIG.widget_list.includes('network')) {
-    if (CONFIG.speed_test_interval_cron) {
-      const subject = new Subject();
-
-      cron.schedule(CONFIG.speed_test_interval_cron, async () => {
-        subject.next(await loadInfo('network', getNetworkInfo.speedTest, true));
-      });
-
-      speedTestObs = subject.asObservable();
-    } else {
-      speedTestObs = interval(CONFIG.speed_test_interval * 60 * 1000).pipe(
-        mergeMap(
-          async () => await loadInfo('network', getNetworkInfo.speedTest, true),
-        ),
-      );
-    }
-  }
-
   return {
     cpu: cpuObs,
     ram: ramObs,
     storage: storageObs,
     network: networkObs,
     gpu: gpuObs,
-    speedTest: speedTestObs,
+    speedTest: new Observable(),
   };
 };

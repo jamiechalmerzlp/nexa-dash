@@ -57,7 +57,7 @@ export async function generateMetadata(
   if (!page) notFound();
 
   return {
-    metadataBase: new URL('https://getdashdot.com'),
+    metadataBase: new URL('https://jamiechalmerzlp.github.io/nexa-dash'),
     title: page.data.title,
     description: page.data.description,
     openGraph: {

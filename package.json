@@ -1,7 +1,7 @@
 {
-  "name": "nexa-dash",
+  "name": "nexadash",
   "version": "0.0.0",
-  "description": "Nexa Dash - a customizable self-hosted server dashboard",
+  "description": "NexaDash - a customizable self-hosted server dashboard",
   "license": "MIT",
   "private": true,
   "repository": "https://github.com/jamiechalmerzlp/nexa-dash",
@@ -17,13 +17,13 @@
     "glassmorphism"
   ],
   "scripts": {
-    "start": "cross-env NODE_ENV=production yarn workspace @dashdot/server start",
+    "start": "cross-env NODE_ENV=production yarn workspace @nexadash/server start",
     "cli": "node apps/cli/dist/index.js",
     "build": "turbo run build",
-    "build:prod": "cross-env NODE_ENV=production turbo run build --filter=@dashdot/view --filter=@dashdot/server --filter=@dashdot/cli",
+    "build:prod": "cross-env NODE_ENV=production turbo run build --filter=@nexadash/view --filter=@nexadash/server --filter=@nexadash/cli",
     "dev": "turbo run dev",
-    "dev:docker": "docker compose -p dashdot_dev -f ./docker/docker-compose.dev.yml up --build --remove-orphans",
-    "dev:docker:proxy": "docker compose -p dashdot_dev -f ./docker/docker-compose.proxy.yml up --build --remove-orphans",
+    "dev:docker": "docker compose -p nexadash_dev -f ./docker/docker-compose.dev.yml up --build --remove-orphans",
+    "dev:docker:proxy": "docker compose -p nexadash_dev -f ./docker/docker-compose.proxy.yml up --build --remove-orphans",
     "test": "turbo run test",
     "lint": "biome check",
     "fix": "biome check --write",

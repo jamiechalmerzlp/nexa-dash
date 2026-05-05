@@ -1,4 +1,4 @@
-import type { Config } from '@dashdot/common';
+import type { Config } from '@nexadash/common';
 
 const numNull = (val: string | undefined): number | undefined => {
   if (val === undefined || val === '') {
@@ -7,7 +7,8 @@ const numNull = (val: string | undefined): number | undefined => {
   return +val;
 };
 
-const penv = (key: string): string | undefined => process.env[`DASHDOT_${key}`];
+const penv = (key: string): string | undefined =>
+  process.env[`NEXADASH_${key}`];
 const lst = (item: string): string[] => (item === '' ? [] : item.split(','));
 const numlst = (item: string): number[] => lst(item).map((item) => +item);
 const kv = <T extends boolean>(
@@ -42,10 +43,10 @@ export const CONFIG: Config = {
   disable_background_stats_collection:
     penv('DISABLE_BACKGROUND_STATS_COLLECTION') === 'true',
 
-  show_dash_version: (penv('SHOW_DASH_VERSION') as any) ?? 'icon_hover',
+  show_nexadash_version: (penv('SHOW_NEXADASH_VERSION') as any) ?? 'icon_hover',
   show_host: penv('SHOW_HOST') === 'true',
   custom_host: penv('CUSTOM_HOST'),
-  page_title: penv('PAGE_TITLE') ?? 'Nexa Dash',
+  page_title: penv('PAGE_TITLE') ?? 'NexaDash',
   use_imperial: penv('USE_IMPERIAL') === 'true',
   network_speed_as_bytes: penv('NETWORK_SPEED_AS_BYTES') === 'true',
   always_show_percentages: penv('ALWAYS_SHOW_PERCENTAGES') === 'true',

@@ -1,4 +1,4 @@
-import type { RamInfo, RamLoad } from '@dashdot/common';
+import type { RamInfo, RamLoad } from '@nexadash/common';
 import * as si from 'systeminformation';
 
 export default {

@@ -6,15 +6,18 @@ import {
   type ServerInfo,
   type StorageLoad,
   urlJoin,
-} from '@dashdot/common';
+} from '@nexadash/common';
 import { useEffect, useState } from 'react';
 import { io, type Socket } from 'socket.io-client';
 import { environment } from '../environment';
+import { getDashboardPath } from './app-routes';
 
 const getFullyQualifiedSocket = (): Socket => {
   const { origin, pathname } = window.location;
+  const dashboardPath = getDashboardPath(pathname);
+
   return io(environment.backendUrl, {
-    path: new URL(urlJoin(origin, pathname, 'socket')).pathname,
+    path: new URL(urlJoin(origin, dashboardPath, 'socket')).pathname,
   });
 };
 

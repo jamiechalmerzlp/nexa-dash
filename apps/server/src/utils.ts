@@ -35,7 +35,7 @@ export const resolveSymlink = async (
   }
   if (seen.size >= maxDepth) {
     throw new Error(
-      `Symlink chain longer than ${maxDepth}: ${[...seen, p].join(' → ')}`,
+      `Symlink chain longer than ${maxDepth}: ${[...seen, p].join(' -> ')}`,
     );
   }
   seen.add(p);
@@ -91,7 +91,13 @@ const HOST_OS_CANDIDATES = [
 export const refreshHostOsRelease = async (): Promise<void> => {
   if (!CONFIG.running_in_docker) return;
 
-  const hostPath = HOST_OS_CANDIDATES.find((p) => fs.lstatSync(p));
+  const hostPath = HOST_OS_CANDIDATES.find((p) => {
+    try {
+      return Boolean(fs.lstatSync(p));
+    } catch {
+      return false;
+    }
+  });
   if (!hostPath) return;
 
   const realFile = await resolveSymlink(hostPath);

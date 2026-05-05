@@ -103,7 +103,6 @@ export const SingleWidgetChart: FC = () => {
       Component: NetworkChart,
       props: {
         load: networkLoad,
-        data: serverInfo.network,
         config: config,
         filter: query.filter,
       },

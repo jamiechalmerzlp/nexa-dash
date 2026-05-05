@@ -1,6 +1,6 @@
 ---
 title: Docker-Compose
-description: How to install and configure dash. using docker-compose
+description: How to install and configure NexaDash using docker-compose
 tags:
   - Installation
   - Configuration
@@ -9,18 +9,26 @@ tags:
 ---
 
 ```yaml
-version: '3.5'
-
 services:
-  dash:
-    image: mauricenino/dashdot:latest
+  nexadash:
+    image: jamiechalmerzlp/nexadash:latest
     restart: unless-stopped
     privileged: true
     ports:
       - '80:3001'
+    environment:
+      NEXADASH_SHOW_HOST: 'true'
+      NEXADASH_ENABLE_CPU_TEMPS: 'true'
     volumes:
-      - /:/mnt/host:ro
+      - type: bind
+        source: /
+        target: /mnt/host
+        read_only: true
 ```
+
+This long-form bind mount is the recommended default. It ensures NexaDash can
+read host OS, storage, and network data from `/mnt/host`, and it avoids Docker
+or Portainer silently converting the mount into a named volume.
 
 ## Configuration
 
@@ -28,9 +36,9 @@ Config options can optionally set, by using the [environment](https://docs.docke
 
 ```yaml
 services:
-  dash:
+  nexadash:
     environment:
-      DASHDOT_ENABLE_CPU_TEMPS: 'true'
+      NEXADASH_ENABLE_CPU_TEMPS: 'true'
     # ...
 ```
 
@@ -39,11 +47,9 @@ services:
 GPU support is available with another image tag and a slightly different config.
 
 ```yaml
-version: '3.5'
-
 services:
-  dash:
-    image: mauricenino/dashdot:nvidia
+  nexadash:
+    image: jamiechalmerzlp/nexadash:nvidia
     restart: unless-stopped
     privileged: true
     deploy:
@@ -55,7 +61,12 @@ services:
     ports:
       - '80:3001'
     volumes:
-      - /:/mnt/host:ro
+      - type: bind
+        source: /
+        target: /mnt/host
+        read_only: true
     environment:
-      DASHDOT_WIDGET_LIST: 'os,cpu,storage,ram,network,gpu'
+      NEXADASH_WIDGET_LIST: 'os,cpu,storage,ram,network,gpu'
 ```
+
+Use the same long-form bind mount for GPU deployments too.

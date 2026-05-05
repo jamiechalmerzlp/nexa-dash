@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for contributing to Nexa Dash.
+Thanks for contributing to NexaDash.
 
 The easiest ways to contribute are:
 

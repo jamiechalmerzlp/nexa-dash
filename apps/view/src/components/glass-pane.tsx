@@ -1,4 +1,4 @@
-import type { Transient } from '@dashdot/common';
+import type { Transient } from '@nexadash/common';
 import { motion } from 'framer-motion';
 import { forwardRef } from 'react';
 import styled from 'styled-components';
@@ -29,6 +29,8 @@ type GlassPaneProps = {
   grow?: number;
   minWidth?: number;
   enableTilt?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
   children?: React.ReactNode;
 };
 
@@ -39,6 +41,12 @@ export const GlassPane = motion(
     return (
       <Container
         ref={ref}
+        // Forward className/style so styled(GlassPane) and inline overrides
+        // can actually adjust the inner Container (the element that owns
+        // min/max-height, padding, etc.). Without this, callers like the
+        // settings page can't unlock the dashboard-widget-sized defaults.
+        className={props.className}
+        style={props.style}
         $mobile={isMobile}
         $grow={props.grow ?? 1}
         $minWidth={props.minWidth ?? 350}

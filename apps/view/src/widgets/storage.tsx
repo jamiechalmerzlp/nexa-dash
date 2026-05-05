@@ -1,4 +1,4 @@
-import type { Config, StorageInfo, StorageLoad } from '@dashdot/common';
+import type { Config, StorageInfo, StorageLoad } from '@nexadash/common';
 import { faHdd } from '@fortawesome/free-solid-svg-icons';
 import type { Variants } from 'framer-motion';
 import { type FC, useMemo, useState } from 'react';

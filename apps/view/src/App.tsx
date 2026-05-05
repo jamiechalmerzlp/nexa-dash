@@ -13,6 +13,7 @@ import { isSettingsPath } from './services/app-routes';
 import {
   applyDashboardCustomizations,
   type DashboardCustomizations,
+  getBackgroundMode,
 } from './services/dashboard-customization';
 import { MobileContextProvider } from './services/mobile';
 import { useQuery } from './services/query-params';
@@ -55,7 +56,95 @@ linear-gradient(
   ${theme.colors.secondary} 40%
 )`;
 
-const GlobalStyle = createGlobalStyle<{ noBg: boolean }>`
+const getAuroraGradient = (theme: DefaultTheme) => `
+radial-gradient(
+  circle at 18% 18%,
+  ${theme.colors.primary}cc 0%,
+  transparent 24%
+),
+radial-gradient(
+  circle at 82% 12%,
+  ${theme.colors.secondary}aa 0%,
+  transparent 28%
+),
+radial-gradient(
+  circle at 72% 78%,
+  ${theme.colors.networkPrimary}99 0%,
+  transparent 24%
+),
+linear-gradient(
+  140deg,
+  ${theme.colors.background} 0%,
+  ${theme.colors.secondary} 46%,
+  ${theme.colors.primary} 100%
+)`;
+
+const getStudioGradient = (theme: DefaultTheme) => `
+linear-gradient(
+  125deg,
+  ${theme.colors.background} 0%,
+  ${theme.colors.secondary} 42%,
+  ${theme.colors.primary} 100%
+),
+radial-gradient(
+  ellipse at top left,
+  ${theme.colors.primary}88 0%,
+  transparent 38%
+),
+radial-gradient(
+  ellipse at bottom right,
+  ${theme.colors.gpuPrimary}66 0%,
+  transparent 42%
+)`;
+
+const getAppBackground = (
+  theme: DefaultTheme,
+  customizations: DashboardCustomizations,
+) => {
+  const backgroundMode = getBackgroundMode(customizations);
+  const backgroundImage = customizations.backgroundImage?.trim();
+
+  if (backgroundMode === 'image' && backgroundImage) {
+    return {
+      css: `linear-gradient(
+        135deg,
+        ${theme.colors.background}cc 0%,
+        ${theme.colors.secondary}88 100%
+      ), url("${backgroundImage}")`,
+      size: 'cover',
+      position: 'center center',
+    };
+  }
+
+  if (backgroundMode === 'aurora') {
+    return {
+      css: getAuroraGradient(theme),
+      size: 'auto',
+      position: 'center center',
+    };
+  }
+
+  if (backgroundMode === 'studio') {
+    return {
+      css: getStudioGradient(theme),
+      size: 'auto',
+      position: 'center center',
+    };
+  }
+
+  return {
+    css: theme.dark ? getDarkGradient(theme) : getLightGradient(theme),
+    size: 'auto',
+    position: 'center center',
+  };
+};
+
+const GlobalStyle = createGlobalStyle<{
+  noBg: boolean;
+  $backgroundCss: string;
+  $backgroundSize: string;
+  $backgroundPosition: string;
+}>`
   body {
     background-color: ${({ theme, noBg }) =>
       noBg ? 'transparent' : theme.colors.background};
@@ -67,12 +156,15 @@ const GlobalStyle = createGlobalStyle<{ noBg: boolean }>`
     width: 100%;
     height: 100%;
 
-    background: ${({ theme, noBg }) =>
-      noBg
-        ? 'transparent'
-        : theme.dark
-          ? getDarkGradient(theme)
-          : getLightGradient(theme)};
+    background-color: ${({ theme, noBg }) =>
+      noBg ? 'transparent' : theme.colors.background};
+    background-image: ${({ noBg, $backgroundCss }) =>
+      noBg ? 'none' : $backgroundCss};
+    background-size: ${({ noBg, $backgroundSize }) =>
+      noBg ? 'auto' : $backgroundSize};
+    background-position: ${({ noBg, $backgroundPosition }) =>
+      noBg ? 'initial' : $backgroundPosition};
+    background-repeat: no-repeat;
 
     transition: background 0.5s ease;
     background-attachment: fixed;
@@ -159,6 +251,11 @@ export const App: FC = () => {
     }
   }, [theme.dark]);
 
+  const appBackground = useMemo(
+    () => getAppBackground(theme, dashboardCustomizations),
+    [dashboardCustomizations, theme],
+  );
+
   return (
     <ThemeProvider theme={theme}>
       <ConfigProvider
@@ -184,7 +281,12 @@ export const App: FC = () => {
           )}
         </MobileContextProvider>
       </ConfigProvider>
-      <GlobalStyle noBg={query.singleWidget} />
+      <GlobalStyle
+        noBg={query.singleWidget}
+        $backgroundCss={appBackground.css}
+        $backgroundSize={appBackground.size}
+        $backgroundPosition={appBackground.position}
+      />
     </ThemeProvider>
   );
 };

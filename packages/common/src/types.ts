@@ -76,8 +76,8 @@ export type OsInfo = {
   kernel: string;
   arch: string;
   uptime: number;
-  dash_version: string;
-  dash_buildhash: string;
+  nexadash_version: string;
+  nexadash_buildhash: string;
 };
 
 export type HardwareInfo = {
@@ -103,7 +103,7 @@ export type Config = {
   disable_integrations: boolean;
   disable_background_stats_collection: boolean;
 
-  show_dash_version?: 'icon_hover' | 'bottom_right';
+  show_nexadash_version?: 'icon_hover' | 'bottom_right';
   show_host: boolean;
   custom_host?: string;
   page_title: string;
@@ -117,7 +117,7 @@ export type Config = {
 
   // Widgets, Labels
   widget_list: ('os' | 'cpu' | 'storage' | 'ram' | 'network' | 'gpu')[];
-  os_label_list: ('os' | 'arch' | 'up_since' | 'dash_version')[];
+  os_label_list: ('os' | 'arch' | 'up_since' | 'nexadash_version')[];
   cpu_label_list: ('brand' | 'model' | 'cores' | 'threads' | 'frequency')[];
   storage_label_list: ('brand' | 'size' | 'type' | 'raid')[];
   ram_label_list: ('brand' | 'size' | 'type' | 'frequency')[];

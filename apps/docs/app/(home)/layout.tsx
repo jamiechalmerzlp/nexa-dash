@@ -7,9 +7,15 @@ export default function Layout({ children }: LayoutProps<'/'>) {
       {...baseOptions()}
       links={[
         { url: '/docs', text: 'Documentation' },
-        { url: `https://discord.gg/3teHFBNQ9W`, text: 'Discord' },
-        { url: 'https://dash.mauz.dev', text: 'Demo' },
-        { url: 'https://ko-fi.com/mauricenino', text: 'Ko-Fi' },
+        {
+          url: 'https://github.com/jamiechalmerzlp/nexa-dash',
+          text: 'GitHub',
+        },
+        {
+          url: 'https://hub.docker.com/r/jamiechalmerzlp/nexadash',
+          text: 'Docker Hub',
+        },
+        { url: '/docs/installation/docker', text: 'Install' },
       ]}
     >
       {children}

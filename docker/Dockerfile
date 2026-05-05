@@ -3,8 +3,8 @@ FROM node:20-alpine AS base
 
 WORKDIR /app
 ARG TARGETPLATFORM
-ENV DASHDOT_IMAGE=base
-ENV DASHDOT_RUNNING_IN_DOCKER=true
+ENV NEXADASH_IMAGE=base
+ENV NEXADASH_RUNNING_IN_DOCKER=true
 
 RUN \
   /bin/echo ">> installing dependencies" &&\
@@ -15,24 +15,17 @@ RUN \
     dmidecode \
     coreutils \
     util-linux \
-    lm-sensors \
-    speedtest-cli &&\
+    lm-sensors &&\
   if [ "$TARGETPLATFORM" = "linux/amd64" ] || [ "$(uname -m)" = "x86_64" ]; \
     then \
-      /bin/echo ">> installing dependencies (amd64)" &&\
-      wget -qO- https://install.speedtest.net/app/cli/ookla-speedtest-1.1.1-linux-x86_64.tgz \
-        | tar xmoz -C /usr/bin speedtest; \
+      /bin/echo ">> installing dependencies (amd64)"; \
   elif [ "$TARGETPLATFORM" = "linux/arm64" ] || [ "$(uname -m)" = "aarch64" ]; \
     then \
       /bin/echo ">> installing dependencies (arm64)" &&\
-      wget -qO- https://install.speedtest.net/app/cli/ookla-speedtest-1.1.1-linux-aarch64.tgz \
-        | tar xmoz -C /usr/bin speedtest &&\
       apk --no-cache add raspberrypi; \
   elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; \
     then \
       /bin/echo ">> installing dependencies (arm/v7)" &&\
-      wget -qO- https://install.speedtest.net/app/cli/ookla-speedtest-1.1.1-linux-armhf.tgz \
-        | tar xmoz -C /usr/bin speedtest &&\
       apk --no-cache add raspberrypi; \
   else /bin/echo "Unsupported platform"; exit 1; \
   fi
@@ -70,7 +63,7 @@ RUN \
 COPY . ./
 
 RUN \
-  yarn --immutable &&\
+  yarn install &&\
   yarn build:prod &&\
   node scripts/strip_package_json.js
 
